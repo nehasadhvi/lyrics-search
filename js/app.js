@@ -1,4 +1,5 @@
-import * as UI from './ui.js'
+import * as UI from './ui.js';
+import { API } from './api.js';
 
 UI.searchForm.addEventListener('submit', e => {
     e.preventDefault();
@@ -15,6 +16,25 @@ UI.searchForm.addEventListener('submit', e => {
         setTimeout(() => {
             UI.messageDiv.innerHTML = "";
             UI.messageDiv.classList.remove('error');
-        }, 3000);
+        }, 2000);
+    } else {
+        //Query the REST Api
+        const lyric = new API(artistName, songName);
+        lyric.queryAPI()
+            .then(data => {
+                const lyrics = data.lyrics;
+                if(lyrics) {
+                    UI.resultDiv.innerHTML = lyrics;
+                    UI.searchForm.reset();
+                } else {
+                    UI.messageDiv.innerHTML = 'No Lyrics Found';
+                    UI.messageDiv.classList.add('error');
+                    setTimeout(() => {
+                        UI.messageDiv.innerHTML = '';
+                        UI.messageDiv.classList.remove('error'); 
+                        UI.searchForm.reset();
+                    }, 3000);
+                }
+            });
     }
 })
